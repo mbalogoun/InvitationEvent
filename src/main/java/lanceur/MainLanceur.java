@@ -2,22 +2,21 @@ package lanceur;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import model.Event;
-import model.Guest;
 
 public class MainLanceur {
 
 	public static void main(String[] args) {
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("invitationevent");
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction transaction = em.getTransaction();
+//		EntityManager em = emf.createEntityManager();
+//		EntityTransaction transaction = em.getTransaction();
 
-		try {
-			transaction.begin();
+//		try {
+//			transaction.begin();
 
 			// PERSIST
 
@@ -45,23 +44,37 @@ public class MainLanceur {
 			//REMOVE
 			
 			
-			Event e3 = em.find(Event.class, 1L);
+//			Event e3 = em.find(Event.class, 1L);
+//			
+//			
+//			e3.getGuests().remove(em.find(Guest.class, 3L));
 			
 			
-			e3.getGuests().remove(em.find(Guest.class, 3L));
 			
 			
+//			transaction.commit();
+//		} catch (Exception e) {
+//			if (transaction != null)
+//				transaction.rollback();
+//			e.printStackTrace();
+//		} finally {
+//			em.close();
+//			emf.close();
+//		}
 			
-			
-			transaction.commit();
-		} catch (Exception e) {
-			if (transaction != null)
-				transaction.rollback();
-			e.printStackTrace();
-		} finally {
-			em.close();
-			emf.close();
-		}
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Event> tpq = em.createQuery(
+				"SELECT e FROM Event e JOIN FETCH e.guests i WHERE e.id = :id", Event.class);
+		tpq.setParameter("id", 1L);
+		
+		Event event = tpq.getSingleResult();
+		
+		em.close();
+		emf.close();
+		
+		System.out.println("Les invites sont: " +event.getGuests());
+		
+
 
 	}
 
